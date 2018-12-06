@@ -17,7 +17,7 @@ Properties {
     # Pester
     $TestRootDir = "$ProjectRoot\Tests"
     $TestScripts = Get-ChildItem "$ProjectRoot\Tests\*Tests.ps1"
-    $TestFile = "TestResults_PS$PSVersion`_$TimeStamp.xml"
+    $TestFile = "$($TimeStamp)_UnitTestResults.xml"
 
     # Script Analyzer
     [ValidateSet('Error', 'Warning', 'Any', 'None')]

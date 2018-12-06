@@ -6,11 +6,24 @@
 pool:
   vmImage: 'vs2017-win2016'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - develop
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+steps:
+  - task: PowerShell@1
+    displayName: Run Unit Tests
+    inputs:
+      scriptType: filePath
+      scriptName: "Build/build.ps1"
+      arguments: -Task 'Test'
+
+  - task: PublishTestResults@2
+    inputs:
+      testRunner: 'NUnit'
+      testResultsFiles: '**UnitTestResults.xml'
+      testRunTitle: 'UnitTests'
+    condition: always()

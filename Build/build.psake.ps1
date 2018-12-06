@@ -77,7 +77,7 @@ Task 'Test' -Depends 'Analyze' {
         Add-TestResultToAppVeyor -TestFile $TestFilePath
     }
 
-    Remove-Item $TestFilePath -Force -ErrorAction 'SilentlyContinue'
+    # Remove-Item $TestFilePath -Force -ErrorAction 'SilentlyContinue'
 
     # Fail build if any tests fail
     if ($TestResults.FailedCount -gt 0) {

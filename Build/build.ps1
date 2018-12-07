@@ -1,32 +1,48 @@
-param ($Task = 'Default')
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [System.String[]]
+    $TaskList = 'Default',
 
-$global:VerbosePreference = "SilentlyContinue"
+    [Parameter()]
+    [System.Collections.Hashtable]
+    $Parameters,
 
-# Grab nuget bits, install modules, set build variables, start build.
+    [Parameter()]
+    [System.Collections.Hashtable]
+    $Properties
+)
+
+Write-Output "`nSTARTED TASKS: $($TaskList -join ',')`n"
+
+# Bootstrap environment
 Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
 
-# Install modules if required
-$ModNames = @('Psake', 'PSDeploy', 'BuildHelpers', 'PSScriptAnalyzer', 'VMware.VimAutomation.Cloud')
-foreach ($ModName in $ModNames) {
-    if (-not (Get-Module -Name $ModName -ListAvailable)) {
-        Write-Verbose "$ModName module not installed. Installing from PSGallery..."
-        Install-Module -Name $ModName -Force -AllowClobber -Scope 'CurrentUser' > $null
-    }
-
-    if (-not (Get-Module -Name $ModName)) {
-        Import-Module -Name $ModName -Force
-    }
+# Install PSDepend module if it is not already installed
+if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
+    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force -Confirm:$false
 }
 
-# Target latest version of Pester as older versions are bundled with OS
-if (-not (Get-Module -Name 'Pester' -ListAvailable | Where-Object {$_.Version -match '^4.'})) {
-    Install-Module 'Pester' -MinimumVersion '4.4.2' -Force -AllowClobber -Scope 'CurrentUser' -SkipPublisherCheck -ErrorAction 'Stop'
+# Install build dependencies
+Import-Module -Name 'PSDepend'
+$invokePSDependParams = @{
+    Path    = (Join-Path -Path $PSScriptRoot -ChildPath 'psvcloud.depend.psd1')
+    # Tags = 'Bootstrap'
+    Import  = $true
+    Force   = $true
+    Install = $true
 }
-if (-not (Get-Module -Name 'Pester')) {
-    Import-Module -Name 'Pester' -Force
+Invoke-PSDepend @invokePSDependParams
+
+# Init BuildHelpers
+Set-BuildEnvironment -Force
+
+# Execute PSake tasts
+$invokePsakeParams = @{
+    buildFile = (Join-Path -Path $ENV:BHProjectPath -ChildPath 'Build\build.psake.ps1')
+    nologo    = $true
 }
+Invoke-Psake @invokePsakeParams @PSBoundParameters
 
-Set-BuildEnvironment
-
-Invoke-psake -buildFile $ENV:BHProjectPath\Build\build.psake.ps1 -taskList $Task -nologo
+Write-Output "`nFINISHED TASKS: $($TaskList -join ',')"
 exit ( [int]( -not $psake.build_success ) )

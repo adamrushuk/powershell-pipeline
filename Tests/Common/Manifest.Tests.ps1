@@ -49,7 +49,7 @@ Describe 'Module manifest' {
         # }
 
         $script:changelogVersion = $null
-        It 'Has a valid version in the changelog' {
+        It 'Has a valid version in the changelog' -Skip {
             foreach ($line in (Get-Content $changelogPath)) {
                 if ($line -match "^##\s\[(?<Version>(\d+\.){1,3}\d+)\]") {
                     $script:changelogVersion = $matches.Version

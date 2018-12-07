@@ -18,8 +18,12 @@ function Get-CIEdgeXML {
     .EXAMPLE
     Get-CIEdgeXML -CIEdgeView $CIEdgeView
 
+    Gets the Edge XML configuration for Edge object in $CIEdgeView
+
     .EXAMPLE
     $CIEdgeView | Get-CIEdgeXML
+
+    Gets the Edge XML configuration for Edge object in $CIEdgeView
 
     .NOTES
     Author: Adam Rush

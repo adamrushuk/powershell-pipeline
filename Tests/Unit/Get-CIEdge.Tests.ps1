@@ -1,7 +1,7 @@
-$ProjectRoot = Resolve-Path "$PSScriptRoot\.."
-$ModuleRoot = Split-Path (Resolve-Path "$ProjectRoot\*\*.psd1")
-$ModuleName = Split-Path $ModuleRoot -Leaf
-$ModulePath = (Join-Path $ModuleRoot "$ModuleName.psd1")
+$ProjectRoot = $env:BHProjectPath
+$ModuleRoot = $env:BHModulePath
+$ModuleName = $env:BHProjectName
+$ModulePath = $env:BHPSModuleManifest
 Import-Module $ModulePath -Force
 
 # Use InModuleScope to expose Private functions
@@ -73,23 +73,23 @@ InModuleScope $ModuleName {
                 <UseForDefaultRoute>true</UseForDefaultRoute>
             </GatewayInterface>
         </GatewayInterfaces>
-		<EdgeGatewayServiceConfiguration xmlns="http://www.vmware.com/vcloud/v1.5">
-			<GatewayDhcpService>
-				<IsEnabled>false</IsEnabled>
-			</GatewayDhcpService>
-			<FirewallService>
-				<IsEnabled>false</IsEnabled>
-			</FirewallService>
-			<NatService>
-				<IsEnabled>false</IsEnabled>
-			</NatService>
-			<GatewayIpsecVpnService>
-				<IsEnabled>false</IsEnabled>
-			</GatewayIpsecVpnService>
-			<StaticRoutingService>
-				<IsEnabled>false</IsEnabled>
-			</StaticRoutingService>
-		</EdgeGatewayServiceConfiguration>
+        <EdgeGatewayServiceConfiguration xmlns="http://www.vmware.com/vcloud/v1.5">
+            <GatewayDhcpService>
+                <IsEnabled>false</IsEnabled>
+            </GatewayDhcpService>
+            <FirewallService>
+                <IsEnabled>false</IsEnabled>
+            </FirewallService>
+            <NatService>
+                <IsEnabled>false</IsEnabled>
+            </NatService>
+            <GatewayIpsecVpnService>
+                <IsEnabled>false</IsEnabled>
+            </GatewayIpsecVpnService>
+            <StaticRoutingService>
+                <IsEnabled>false</IsEnabled>
+            </StaticRoutingService>
+        </EdgeGatewayServiceConfiguration>
         <HaEnabled>false</HaEnabled>
         <UseDefaultRouteForDnsRelay>false</UseDefaultRouteForDnsRelay>
     </Configuration>

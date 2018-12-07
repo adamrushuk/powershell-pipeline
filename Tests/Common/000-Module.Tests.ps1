@@ -1,7 +1,7 @@
-$ProjectRoot = Resolve-Path "$PSScriptRoot\.."
-$ModuleRoot = Split-Path (Resolve-Path "$ProjectRoot\*\*.psd1")
-$ModuleName = Split-Path $ModuleRoot -Leaf
-$ModulePath = (Join-Path $ModuleRoot "$ModuleName.psd1")
+$ProjectRoot = $env:BHProjectPath
+$ModuleRoot = $env:BHModulePath
+$ModuleName = $env:BHProjectName
+$ModulePath = $env:BHPSModuleManifest
 Import-Module $ModulePath -Force
 
 Describe "Module Tests for $ModuleName" {

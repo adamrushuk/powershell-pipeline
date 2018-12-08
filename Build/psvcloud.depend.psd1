@@ -17,8 +17,8 @@
     BuildHelpers                 = '2.0.1'
     Pester                       = '4.4.2'
     PlatyPS                      = '0.12.0'
-    psake                        = '4.7.4 '
-    PSDeploy                     = '1.0.1 '
+    psake                        = '4.7.4'
+    PSDeploy                     = '1.0.1'
     PSScriptAnalyzer             = '1.17.1'
-    'VMware.VimAutomation.Cloud' = 'Latest'
+    'VMware.VimAutomation.Cloud' = '11.0.0.10379994'
 }

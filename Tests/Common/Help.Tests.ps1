@@ -1,5 +1,9 @@
 # Taken with love from @juneb_get_help (https://raw.githubusercontent.com/juneb/PesterTDD/master/Module.Help.Tests.ps1)
-$commands = Get-Command -Module (Get-Module $env:BHProjectName) -CommandType Cmdlet, Function, Workflow  # Not alias
+# Import module
+if (-not (Get-Module -Name $env:BHProjectName -ListAvailable)) {
+    Import-Module -Name $env:BHPSModuleManifest -ErrorAction 'Stop' -Force
+}
+$commands = Get-Command -Module $env:BHProjectName -CommandType Cmdlet, Function, Workflow -ErrorAction 'Stop' # Not alias
 
 ## When testing help, remember that help is cached at the beginning of each session.
 ## To test, restart session.

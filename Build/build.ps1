@@ -20,7 +20,10 @@ Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
 
 # Install PSDepend module if it is not already installed
 if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
-    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force -Confirm:$false
+    Write-Output "`nPSDepend is not yet installed...installing PSDepend now..."
+    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Confirm:$false
+} else {
+    Write-Output "`nPSDepend already installed...skipping."
 }
 
 # Install build dependencies
@@ -29,20 +32,24 @@ $invokePSDependParams = @{
     Path    = (Join-Path -Path $PSScriptRoot -ChildPath 'psvcloud.depend.psd1')
     # Tags = 'Bootstrap'
     Import  = $true
-    Force   = $true
+    Confirm = $false
     Install = $true
+    # Verbose = $true
 }
 Invoke-PSDepend @invokePSDependParams
 
 # Init BuildHelpers
 Set-BuildEnvironment -Force
 
+# Import module
+Import-Module -Name $env:BHPSModuleManifest -ErrorAction 'Stop' -Force
+
 # Execute PSake tasts
 $invokePsakeParams = @{
-    buildFile = (Join-Path -Path $ENV:BHProjectPath -ChildPath 'Build\build.psake.ps1')
+    buildFile = (Join-Path -Path $env:BHProjectPath -ChildPath 'Build\build.psake.ps1')
     nologo    = $true
 }
 Invoke-Psake @invokePsakeParams @PSBoundParameters
 
 Write-Output "`nFINISHED TASKS: $($TaskList -join ',')"
-exit ( [int]( -not $psake.build_success ) )
+exit ( [int](-not $psake.build_success) )

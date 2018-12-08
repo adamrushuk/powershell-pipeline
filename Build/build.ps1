@@ -15,13 +15,16 @@ param (
 
 Write-Output "`nSTARTED TASKS: $($TaskList -join ',')`n"
 
+Write-Output "`nPowerShell Version Information:"
+$PSVersionTable
+
 # Bootstrap environment
 Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
 
 # Install PSDepend module if it is not already installed
 if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
     Write-Output "`nPSDepend is not yet installed...installing PSDepend now..."
-    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Confirm:$false
+    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force
 } else {
     Write-Output "`nPSDepend already installed...skipping."
 }

@@ -15,12 +15,20 @@ trigger:
 
 steps:
   - powershell: |
-      .\Build\build.ps1 -ResolveDependency -TaskList 'Test'
+      .\Build\build.ps1 -ResolveDependency -TaskList 'Release'
     displayName: 'Run Unit Tests'
 
   - task: PublishTestResults@2
+    displayName: 'Publish Unit Tests'
     inputs:
       testRunner: 'NUnit'
       testResultsFiles: '**UnitTestResults.xml'
       testRunTitle: 'UnitTests'
+    condition: always()
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Module'
+    inputs:
+      PathtoPublish: Artifacts
+      ArtifactName: Artifacts
     condition: always()

@@ -23,6 +23,9 @@ Properties {
     [ValidateSet('Error', 'Warning', 'Any', 'None')]
     $ScriptAnalysisFailBuildOnSeverityLevel = 'None'
     $ScriptAnalyzerSettingsPath = "$ProjectRoot\PSScriptAnalyzerSettings.psd1"
+
+    # Documentation
+    $DocumentationPath = Join-Path -Path $ProjectRoot -ChildPath 'Documentation'
 }
 
 Task 'Default' -Depends 'Test'
@@ -111,4 +114,31 @@ Task 'Deploy' -Depends 'Build' {
         Recurse = $false
     }
     Invoke-PSDeploy @Verbose @Params
+}
+
+Task 'UpdateDocumentation' -Depends 'Test' {
+    $lines
+
+    Write-Output "`nSTARTED: Updating Markdown help..."
+
+    $null = Import-Module -Name $env:BHPSModuleManifest -Global -Force -PassThru -Verbose
+
+    # Cleanup
+    Remove-Item -Path $DocumentationPath -Recurse -Force -ErrorAction 'SilentlyContinue'
+    Start-Sleep -Seconds 5
+    New-Item -Path $DocumentationPath -ItemType 'Directory' | Out-Null
+
+    $platyPSParams = @{
+        Module       = $env:BHProjectName
+        OutputFolder = $DocumentationPath
+        NoMetadata   = $true
+    }
+
+    New-MarkdownHelp @platyPSParams -ErrorAction 'SilentlyContinue' -Verbose | Out-Null
+
+    # Update index.md
+    Write-Output "`nUpdating index.md..."
+    Copy-Item -Path "$env:BHProjectPath\README.md" -Destination "$($DocumentationPath)\index.md" -Force -Verbose | Out-Null
+
+    Write-Output "`nFINISHED: Updating Markdown help."
 }

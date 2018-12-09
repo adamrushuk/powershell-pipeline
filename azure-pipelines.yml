@@ -14,12 +14,9 @@ trigger:
     - develop
 
 steps:
-  - task: PowerShell@1
-    displayName: Run Unit Tests
-    inputs:
-      scriptType: filePath
-      scriptName: "Build/build.ps1"
-      arguments: -Task 'Test'
+  - powershell: |
+      .\Build\build.ps1 -TaskList 'Test'
+    displayName: 'Run Unit Tests'
 
   - task: PublishTestResults@2
     inputs:

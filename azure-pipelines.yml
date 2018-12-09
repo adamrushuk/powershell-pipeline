@@ -22,7 +22,7 @@ steps:
     displayName: 'Publish Unit Tests'
     inputs:
       testRunner: 'NUnit'
-      testResultsFiles: '**UnitTestResults.xml'
+      searchFolder: 'Artifacts'
       testRunTitle: 'UnitTests'
     condition: always()
 

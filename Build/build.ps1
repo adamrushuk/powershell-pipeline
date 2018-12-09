@@ -10,7 +10,11 @@ param (
 
     [Parameter()]
     [System.Collections.Hashtable]
-    $Properties
+    $Properties,
+
+    [Parameter()]
+    [Switch]
+    $ResolveDependency
 )
 
 Write-Output "`nSTARTED TASKS: $($TaskList -join ',')`n"
@@ -18,28 +22,41 @@ Write-Output "`nSTARTED TASKS: $($TaskList -join ',')`n"
 Write-Output "`nPowerShell Version Information:"
 $PSVersionTable
 
-# Bootstrap environment
-Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
+# Load dependencies
+if ($PSBoundParameters.Keys -contains 'ResolveDependency')
+{
+    # Bootstrap environment
+    Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
 
-# Install PSDepend module if it is not already installed
-if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
-    Write-Output "`nPSDepend is not yet installed...installing PSDepend now..."
-    Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force
-} else {
-    Write-Output "`nPSDepend already installed...skipping."
-}
+    # Install PSDepend module if it is not already installed
+    if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
+        Write-Output "`nPSDepend is not yet installed...installing PSDepend now..."
+        Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force
+    } else {
+        Write-Output "`nPSDepend already installed...skipping."
+    }
 
-# Install build dependencies
-Import-Module -Name 'PSDepend'
-$invokePSDependParams = @{
-    Path    = (Join-Path -Path $PSScriptRoot -ChildPath 'psvcloud.depend.psd1')
-    # Tags = 'Bootstrap'
-    Import  = $true
-    Confirm = $false
-    Install = $true
-    # Verbose = $true
+    # Install build dependencies
+    $psdependencyConfigPath = Join-Path -Path $PSScriptRoot -ChildPath 'psvcloud.depend.psd1'
+    Write-Output "Checking / resolving module dependencies from [$psdependencyConfigPath]..."
+    Import-Module -Name 'PSDepend'
+    $invokePSDependParams = @{
+        Path    = $psdependencyConfigPath
+        # Tags = 'Bootstrap'
+        Import  = $true
+        Confirm = $false
+        Install = $true
+        # Verbose = $true
+    }
+    Invoke-PSDepend @invokePSDependParams
+
+    # Remove ResolveDependency PSBoundParameter ready for passthru to PSake
+    $PSBoundParameters.Remove('ResolveDependency')
 }
-Invoke-PSDepend @invokePSDependParams
+else
+{
+    Write-Host "Skipping dependency check...`n" -ForegroundColor 'Yellow'
+}
 
 # Init BuildHelpers
 Set-BuildEnvironment -Force

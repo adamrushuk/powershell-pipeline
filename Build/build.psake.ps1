@@ -5,17 +5,11 @@ Properties {
         $ProjectRoot = $PSScriptRoot
     }
 
-    $Timestamp = Get-Date -UFormat "%Y%m%d-%H%M%S"
+    $Timestamp = Get-Date -UFormat '%Y%m%d-%H%M%S'
     $PSVersion = $PSVersionTable.PSVersion.Major
     $lines = '----------------------------------------------------------------------'
 
-    $Verbose = @{}
-    if ($ENV:BHCommitMessage -match "!verbose") {
-        $Verbose = @{Verbose = $True}
-    }
-
     # Pester
-    $TestRootDir = "$ProjectRoot\Tests"
     $TestScripts = Get-ChildItem "$ProjectRoot\Tests\*\*Tests.ps1"
     $TestFile = "$($TimeStamp)_UnitTestResults.xml"
 
@@ -26,10 +20,22 @@ Properties {
 
     # Documentation
     $DocumentationPath = Join-Path -Path $ProjectRoot -ChildPath 'Documentation'
+
+    # Build
+    $ArtifactFolder = Join-Path -Path $ProjectRoot -ChildPath 'Artifacts'
+
+    # Staging
+    $StagingFolder = Join-Path -Path $projectRoot -ChildPath 'Staging'
+    $StagingModulePath = Join-Path -Path $StagingFolder -ChildPath $env:BHProjectName
 }
 
-Task 'Default' -Depends 'Test'
 
+# Define top-level tasks
+Task 'Default' -Depends 'Test'
+Task 'Release' -Depends 'Clean', 'Test', 'UpdateDocumentation', 'CombineFunctionsAndStage', 'CreateReleaseArtifact' #'UpdateManifest', 'UpdateTag',
+
+
+# Main tasks
 Task 'Init' {
     $lines
     Set-Location $ProjectRoot
@@ -37,6 +43,7 @@ Task 'Init' {
     Get-Item ENV:BH*
     "`n"
 }
+
 
 Task 'Analyze' -Depends 'Init' {
 
@@ -67,12 +74,13 @@ Task 'Analyze' -Depends 'Init' {
 
 }
 
+
 Task 'Test' -Depends 'Analyze' {
     $lines
     "`nSTATUS: Testing with PowerShell $PSVersion"
 
     # Gather test results. Store them in a variable and file
-    $TestFilePath = Join-Path -Path $ProjectRoot -ChildPath $TestFile
+    $TestFilePath = Join-Path -Path $ArtifactFolder -ChildPath $TestFile
     $TestResults = Invoke-Pester -Script $TestScripts -PassThru -OutputFormat 'NUnitXml' -OutputFile $TestFilePath -PesterOption @{IncludeVSCodeMarker = $true}
 
     # Upload test results to Appveyor
@@ -88,6 +96,7 @@ Task 'Test' -Depends 'Analyze' {
     }
     "`n"
 }
+
 
 Task 'Build' -Depends 'Test' {
     $lines
@@ -105,6 +114,7 @@ Task 'Build' -Depends 'Test' {
     }
 }
 
+
 Task 'Deploy' -Depends 'Build' {
     $lines
 
@@ -115,6 +125,7 @@ Task 'Deploy' -Depends 'Build' {
     }
     Invoke-PSDeploy @Verbose @Params
 }
+
 
 Task 'UpdateDocumentation' -Depends 'Test' {
     $lines
@@ -141,4 +152,79 @@ Task 'UpdateDocumentation' -Depends 'Test' {
     Copy-Item -Path "$env:BHProjectPath\README.md" -Destination "$($DocumentationPath)\index.md" -Force -Verbose | Out-Null
 
     Write-Output "`nFINISHED: Updating Markdown help."
+}
+
+
+Task 'Clean' {
+    $lines
+
+    $foldersToClean = @(
+        $ArtifactFolder
+        $StagingFolder
+    )
+
+    # Remove folders
+    foreach ($folderPath in $foldersToClean) {
+        Remove-Item -Path $folderPath -Recurse -Force -ErrorAction 'SilentlyContinue'
+        New-Item -Path $folderPath -ItemType 'Directory' -Force | Out-String | Write-Verbose
+    }
+}
+
+Task 'CombineFunctionsAndStage' {
+    $lines
+
+    # Create folders
+    New-Item -Path $StagingFolder -ItemType 'Directory' -Force | Out-String | Write-Verbose
+    New-Item -Path $StagingModulePath -ItemType 'Directory' -Force | Out-String | Write-Verbose
+
+    # Get public and private function files
+    $publicFunctions = @( Get-ChildItem -Path "$env:BHModulePath\Public\*.ps1" -Recurse -ErrorAction 'SilentlyContinue' )
+    $privateFunctions = @( Get-ChildItem -Path "$env:BHModulePath\Private\*.ps1" -Recurse -ErrorAction 'SilentlyContinue' )
+
+    # Combine functions into a single .psm1 module
+    $combinedModulePath = Join-Path -Path $StagingModulePath -ChildPath "$($env:BHProjectName).psm1"
+    @($publicFunctions + $privateFunctions) | Get-Content | Add-Content -Path $combinedModulePath
+
+    # Copy other required folders and files
+    $pathsToCopy = @(
+        Join-Path -Path $ProjectRoot -ChildPath 'Documentation'
+        Join-Path -Path $ProjectRoot -ChildPath 'Examples'
+        # Join-Path -Path $ProjectRoot -ChildPath 'CHANGELOG.md'
+        Join-Path -Path $ProjectRoot -ChildPath 'README.md'
+    )
+    Copy-Item -Path $pathsToCopy -Destination $StagingFolder -Recurse
+
+    # Copy existing manifest
+    Copy-Item -Path $env:BHPSModuleManifest -Destination $StagingModulePath -Recurse
+}
+
+
+Task 'CreateReleaseArtifact' {
+    $lines
+
+    # Create /Release folder
+    New-Item -Path $ArtifactFolder -ItemType 'Directory' -Force | Out-String | Write-Verbose
+
+    # Get current manifest version
+    try {
+        $manifest = Test-ModuleManifest -Path $env:BHPSModuleManifest -ErrorAction 'Stop'
+        [Version]$manifestVersion = $manifest.Version
+
+    }
+    catch {
+        throw "Could not get manifest version from [$env:BHPSModuleManifest]"
+    }
+
+    # Create zip file
+    try {
+        $releaseFilename = "$env:BHProjectName-v$($manifestVersion.ToString()).zip"
+        $releasePath = Join-Path -Path $ArtifactFolder -ChildPath $releaseFilename
+        Write-Host "Creating release artifact [$releasePath] using manifest version [$manifestVersion]" -ForegroundColor 'Yellow'
+        Compress-Archive -Path "$StagingFolder/*" -DestinationPath $releasePath -Force -Verbose -ErrorAction 'Stop'
+    }
+    catch {
+        throw "Could not create release artifact [$releasePath] using manifest version [$manifestVersion]"
+    }
+
+    Write-Output "`nFINISHED: Release artifact creation."
 }

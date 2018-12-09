@@ -16,7 +16,7 @@ trigger:
 steps:
   - powershell: |
       .\Build\build.ps1 -ResolveDependency -TaskList 'Release'
-    displayName: 'Run Unit Tests'
+    displayName: 'Test, Build, and Release Module'
 
   - task: PublishTestResults@2
     displayName: 'Publish Unit Tests'

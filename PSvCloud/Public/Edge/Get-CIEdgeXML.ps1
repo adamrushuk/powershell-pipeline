@@ -33,7 +33,7 @@ function Get-CIEdgeXML {
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [VMware.VimAutomation.Cloud.Views.Gateway]
+        # [VMware.VimAutomation.Cloud.Views.Gateway]
         $CIEdgeView
     )
 

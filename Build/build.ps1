@@ -62,6 +62,8 @@ else
 Set-BuildEnvironment -Force
 
 # Import module
+# TODO: add AzDO error reporting with:
+#   Write-Host “##vso[task.logissue type=error;] PowerShell Error Test”
 Import-Module -Name $env:BHPSModuleManifest -ErrorAction 'Stop' -Force
 
 # Execute PSake tasts

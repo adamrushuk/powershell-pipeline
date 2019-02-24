@@ -217,11 +217,11 @@ Task 'CreateBuildArtifact' -Depends 'Init' {
 
     # Get current manifest version
     try {
-        $manifest = Test-ModuleManifest -Path $StagingModulePath -ErrorAction 'Stop'
+        $manifest = Test-ModuleManifest -Path $StagingModuleManifestPath -ErrorAction 'Stop'
         [Version]$manifestVersion = $manifest.Version
 
     } catch {
-        throw "Could not get manifest version from [$StagingModulePath]"
+        throw "Could not get manifest version from [$StagingModuleManifestPath]"
     }
 
     # Create zip file

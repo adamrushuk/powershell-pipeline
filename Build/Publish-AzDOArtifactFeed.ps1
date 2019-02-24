@@ -1,3 +1,7 @@
+Param(
+   [string]$PAT
+)
+
 # Variables
 # $powershellGetVersion = '1.5.0.0' # DO NOT use the latest 1.6.0 version as there is issues with this process
 # $moduleFolderPath = 'C:\Users\adamr\code\PowerShellPipeline\Staging\PSvCloud' # only target folder, NOT the .psm1 or .psd1
@@ -5,8 +9,13 @@ $moduleFolderPath = Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "P
 $repositoryName = 'psmodules'
 $feedUsername = 'NotChecked'
 # $PAT = $env:ArtifactFeedPat
-$PAT = $(ArtifactFeedPat)
+# $PAT = $(ArtifactFeedPat)
 $packageSourceUrl = "https://adamrushuk.pkgs.visualstudio.com/_packaging/$repositoryName/nuget/v2" # Enter your VSTS AccountName (note: v2 Feed)
+
+# Testing
+Write-Host "ARTestVar env var: [$env:ARTestVar]"
+Write-Host "ArtifactFeedPat 'secret' env var: [$env:ArtifactFeedPat]"
+Write-Host "PAT param passed in: [$PAT]"
 
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.

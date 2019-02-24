@@ -4,7 +4,7 @@ This is a Proof of Concept repo to show how you can build CI/CD pipeline for a P
 
 The example is an old PowerShell module I started for VMware vCloud Director.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/4n5tvb1qj1ieq4jv?svg=true)](https://ci.appveyor.com/project/adamrushuk/psvcloud)
+[![Build Status](https://adamrushuk.visualstudio.com/PoC/_apis/build/status/PowerShellPipeline?branchName=master)](https://adamrushuk.visualstudio.com/PoC/_build/latest?definitionId=22&branchName=master)
 
 ## Goals
 
@@ -18,15 +18,21 @@ Use Git with the practical [common flow](https://commonflow.org/) branching mode
 
 Use [psake](https://github.com/psake/psake) to develop build scripts that can be used both locally using [Task Runners in Visual Studio Code](https://code.visualstudio.com/docs/editor/tasks), and by a CI/CD system like [Azure DevOps](https://azure.microsoft.com/en-gb/services/devops/).
 
+This will cover:
+
+- Compiling separate function files into a single .psm1 module.
+- Automatically updating documentation in Markdown, ready for a 3rd-party like
+[ReadTheDocs](https://docs.readthedocs.io/en/latest/).
+
 ### Test
 
-Use [Pester](https://github.com/pester/Pester) for Unit Testing.
+Test the compiled code for known issues and ensure it aligns to defined standards.
+
+This will cover:
+
+- Code analysis using `PSScriptAnalyzer`.
+- Code testing (unit, and common) using `Pester`.
 
 ### Release
 
-Configure [Azure DevOps](https://azure.microsoft.com/en-gb/services/devops/) for Continuous Integration / Continuous Deployment.
-
-This will cover:
-- Release to the [PowerShell Gallery](https://www.powershellgallery.com/packages/PSvCloud).
-- Uploading Artifacts as a [tagged Release in GitHub](https://github.com/adamrushuk/PSvCloud/releases)
-- Automatically updating documentation to a 3rd-party like [ReadTheDocs](https://docs.readthedocs.io/en/latest/).
+Publish the module build artifact to an Azure DevOps Artifacts (NuGet) feed.

@@ -4,51 +4,65 @@
 # https://aka.ms/yaml
 
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: "vs2017-win2016"
 
 trigger:
   batch: true
   branches:
     include:
-    - master
-    - develop
+      - master
+      - develop
 
 steps:
   - powershell: |
       .\Build\build.ps1 -ResolveDependency -TaskList 'Init'
-    displayName: 'Install Dependencies'
+    displayName: "Install Dependencies"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'CombineFunctionsAndStage'
-    displayName: 'Compile'
+    displayName: "Compile"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'Analyze'
-    displayName: 'Analyze'
+    displayName: "Analyze"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'Test'
-    displayName: 'Test'
+    displayName: "Test"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'UpdateDocumentation'
-    displayName: 'Update Documentation'
+    displayName: "Update Documentation"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'CreateBuildArtifact'
-    displayName: 'CreateBuildArtifact'
+    displayName: "CreateBuildArtifact"
 
   - task: PublishTestResults@2
-    displayName: 'Publish Unit Tests'
+    displayName: "Publish Unit Tests"
     inputs:
-      testRunner: 'NUnit'
-      searchFolder: 'Artifacts'
-      testRunTitle: 'UnitTests'
+      testRunner: "NUnit"
+      searchFolder: "Artifacts"
+      testRunTitle: "UnitTests"
     condition: always()
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: Module'
+    displayName: "Publish Artifact: PowerShell Module Zipped"
     inputs:
       PathtoPublish: Artifacts
       ArtifactName: Artifacts
+    condition: always()
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact: Build Scripts"
+    inputs:
+      PathtoPublish: Build
+      ArtifactName: BuildScripts
+    condition: always()
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact: PowerShell Module"
+    inputs:
+      PathtoPublish: Staging\PSvCloud
+      ArtifactName: PSModule
     condition: always()

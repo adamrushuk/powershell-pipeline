@@ -24,6 +24,7 @@ Properties {
     # Staging
     $StagingFolder = Join-Path -Path $projectRoot -ChildPath 'Staging'
     $StagingModulePath = Join-Path -Path $StagingFolder -ChildPath $env:BHProjectName
+    $StagingModuleManifestPath = Join-Path -Path $StagingModulePath -ChildPath "$($env:BHProjectName).psd1"
 
     # Documentation
     $DocumentationPath = Join-Path -Path $StagingFolder -ChildPath 'Documentation'
@@ -216,11 +217,11 @@ Task 'CreateBuildArtifact' -Depends 'Init' {
 
     # Get current manifest version
     try {
-        $manifest = Test-ModuleManifest -Path $env:BHPSModuleManifest -ErrorAction 'Stop'
+        $manifest = Test-ModuleManifest -Path $StagingModulePath -ErrorAction 'Stop'
         [Version]$manifestVersion = $manifest.Version
 
     } catch {
-        throw "Could not get manifest version from [$env:BHPSModuleManifest]"
+        throw "Could not get manifest version from [$StagingModulePath]"
     }
 
     # Create zip file

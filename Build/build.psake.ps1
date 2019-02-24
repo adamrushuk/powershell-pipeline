@@ -32,7 +32,7 @@ Properties {
 
 # Define top-level tasks
 Task 'Default' -Depends 'Test'
-Task 'Release' -Depends 'Clean', 'Test', 'UpdateDocumentation', 'CombineFunctionsAndStage', 'CreateReleaseArtifact' #'UpdateManifest', 'UpdateTag',
+# Task 'Release' -Depends 'Clean', 'Test', 'UpdateDocumentation', 'CombineFunctionsAndStage', 'CreateBuildArtifact' #'UpdateManifest', 'UpdateTag',
 
 
 # Main tasks
@@ -208,7 +208,7 @@ Task 'UpdateDocumentation' -Depends 'ImportStagingModule' {
 
 
 # Admin Rights are needed if you run this locally
-Task 'CreateReleaseArtifact' -Depends 'Init' {
+Task 'CreateBuildArtifact' -Depends 'Init' {
     $lines
 
     # Create /Release folder

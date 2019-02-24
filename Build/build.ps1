@@ -58,8 +58,6 @@ if ($PSBoundParameters.Keys -contains 'ResolveDependency') {
 # Init BuildHelpers
 Set-BuildEnvironment -Force
 
-# Import module
-Import-Module -Name $env:BHPSModuleManifest -ErrorAction 'Stop' -Force
 
 # Execute PSake tasts
 $invokePsakeParams = @{

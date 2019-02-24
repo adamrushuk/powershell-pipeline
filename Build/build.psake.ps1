@@ -75,7 +75,7 @@ Task 'Analyze' -Depends 'Init' {
 }
 
 
-Task 'Test' -Depends 'Analyze' {
+Task 'Test' -Depends 'Init' {
     $lines
     "`nSTATUS: Testing with PowerShell $PSVersion"
 
@@ -98,7 +98,7 @@ Task 'Test' -Depends 'Analyze' {
 }
 
 
-Task 'Build' -Depends 'Test' {
+Task 'Build' -Depends 'Init' {
     $lines
 
     # Load the module, read the exported functions, update the psd1 FunctionsToExport
@@ -114,7 +114,7 @@ Task 'Build' -Depends 'Test' {
 }
 
 
-Task 'Deploy' -Depends 'Build' {
+Task 'Deploy' -Depends 'Init' {
     $lines
 
     $Params = @{
@@ -126,7 +126,7 @@ Task 'Deploy' -Depends 'Build' {
 }
 
 
-Task 'UpdateDocumentation' -Depends 'Test' {
+Task 'UpdateDocumentation' -Depends 'Init' {
     $lines
 
     Write-Output "`nSTARTED: Updating Markdown help..."
@@ -154,7 +154,7 @@ Task 'UpdateDocumentation' -Depends 'Test' {
 }
 
 
-Task 'Clean' {
+Task 'Clean' -Depends 'Init' {
     $lines
 
     $foldersToClean = @(
@@ -169,7 +169,7 @@ Task 'Clean' {
     }
 }
 
-Task 'CombineFunctionsAndStage' {
+Task 'CombineFunctionsAndStage' -Depends 'Init' {
     $lines
 
     # Create folders
@@ -198,7 +198,7 @@ Task 'CombineFunctionsAndStage' {
 }
 
 
-Task 'CreateReleaseArtifact' {
+Task 'CreateReleaseArtifact' -Depends 'Init' {
     $lines
 
     # Create /Release folder

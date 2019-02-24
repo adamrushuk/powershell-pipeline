@@ -15,8 +15,24 @@ trigger:
 
 steps:
   - powershell: |
-      .\Build\build.ps1 -ResolveDependency -TaskList 'Release'
-    displayName: 'Test, Build, and Release Module'
+      .\Build\build.ps1 -ResolveDependency -TaskList 'CombineFunctionsAndStage'
+    displayName: 'Compile'
+
+  - powershell: |
+      .\Build\build.ps1 -TaskList 'Analyze'
+    displayName: 'Analyze'
+
+  - powershell: |
+      .\Build\build.ps1 -TaskList 'Test'
+    displayName: 'Test'
+
+  - powershell: |
+      .\Build\build.ps1 -TaskList 'UpdateDocumentation'
+    displayName: 'Update Documentation'
+
+  - powershell: |
+      .\Build\build.ps1 -TaskList 'CreateBuildArtifact'
+    displayName: 'CreateBuildArtifact'
 
   - task: PublishTestResults@2
     displayName: 'Publish Unit Tests'

@@ -108,8 +108,7 @@ Task 'Build' -Depends 'Test' {
     try {
         $Version = Get-NextPSGalleryVersion -Name $env:BHProjectName -ErrorAction 'Stop'
         Update-Metadata -Path $env:BHPSModuleManifest -PropertyName 'ModuleVersion' -Value $Version -ErrorAction 'Stop'
-    }
-    catch {
+    } catch {
         "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
     }
 }
@@ -210,8 +209,7 @@ Task 'CreateReleaseArtifact' {
         $manifest = Test-ModuleManifest -Path $env:BHPSModuleManifest -ErrorAction 'Stop'
         [Version]$manifestVersion = $manifest.Version
 
-    }
-    catch {
+    } catch {
         throw "Could not get manifest version from [$env:BHPSModuleManifest]"
     }
 
@@ -221,8 +219,7 @@ Task 'CreateReleaseArtifact' {
         $releasePath = Join-Path -Path $ArtifactFolder -ChildPath $releaseFilename
         Write-Host "Creating release artifact [$releasePath] using manifest version [$manifestVersion]" -ForegroundColor 'Yellow'
         Compress-Archive -Path "$StagingFolder/*" -DestinationPath $releasePath -Force -Verbose -ErrorAction 'Stop'
-    }
-    catch {
+    } catch {
         throw "Could not create release artifact [$releasePath] using manifest version [$manifestVersion]"
     }
 

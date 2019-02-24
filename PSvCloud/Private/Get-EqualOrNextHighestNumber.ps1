@@ -54,9 +54,8 @@ function Get-EqualOrNextHighestNumber {
     Write-Verbose "NumberSet is: $NumberSet"
 
     try {
-
         # Assign max value if Number is higher than any in NumberSet
-        $MaxNumber = $NumberSet[$NumberSet.Count-1]
+        $MaxNumber = $NumberSet[$NumberSet.Count - 1]
         if ($Number -gt $MaxNumber) {
             $Number = $MaxNumber
         }
@@ -69,12 +68,8 @@ function Get-EqualOrNextHighestNumber {
                 return $NumberSet[$i]
             }
         }
-
-    }
-    catch [exception] {
-
+    } catch [exception] {
         throw $_
-
     }
 
 } # End function

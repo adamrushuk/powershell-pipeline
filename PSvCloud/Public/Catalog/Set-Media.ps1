@@ -70,8 +70,7 @@ function Set-Media {
             # Must have only one media item
             if ($Media.Count -lt 1) {
                 throw "No media was found with name: $($Name)"
-            }
-            elseif ($Media.Count -gt 1) {
+            } elseif ($Media.Count -gt 1) {
                 throw "More than one media item was found with name: $($Name)"
             }
 
@@ -82,8 +81,7 @@ function Set-Media {
             # Must have only one CIVM item
             if ($CIVM.Count -lt 1) {
                 throw "No VM was found with name: $($CIVMName)"
-            }
-            elseif ($CIVM.Count -gt 1) {
+            } elseif ($CIVM.Count -gt 1) {
                 throw "More than one VM was found with name: $($CIVMName)"
             }
 
@@ -100,7 +98,7 @@ function Set-Media {
             # Build output
             $Action = ''
 
-            if ($PSBoundParameters.ContainsKey('NoMedia')){
+            if ($PSBoundParameters.ContainsKey('NoMedia')) {
 
                 # Eject media
                 Write-Verbose -Message "Ejecting media: $($Name) for VM: $($CIVMName)"
@@ -123,14 +121,13 @@ function Set-Media {
             # Output info
             [PSCustomObject] @{
                 StartTime = $StartTime
-                StopTime = (Get-Date -Format "yyyy-MM-dd_HH-mm-ss")
-                Action = $Action
-                Name = $Name
-                CIVMName = $CIVMName
+                StopTime  = (Get-Date -Format "yyyy-MM-dd_HH-mm-ss")
+                Action    = $Action
+                Name      = $Name
+                CIVMName  = $CIVMName
             }
 
-        }
-        catch [exception] {
+        } catch [exception] {
 
             throw $_
 

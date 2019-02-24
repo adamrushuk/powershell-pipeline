@@ -49,9 +49,8 @@ function Get-CIEdgeXML {
         $Uri = $CIEdgeView.href
         [XML]$EdgeXML = Invoke-RestMethod -URI $Uri -Method GET -Headers $Headers
         Write-Output $EdgeXML
-    }
-    catch [exception] {
+
+    } catch [exception] {
         throw "Could not get configuration XML for $($CIEdgeView.Name)."
     }
-
 }

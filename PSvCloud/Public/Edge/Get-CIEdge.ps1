@@ -62,8 +62,7 @@ function Get-CIEdge {
             if ($CIEdgeViews.count -eq 0) {
                 throw "No Edge Gateways were found."
             }
-        }
-        catch [exception] {
+        } catch [exception] {
             Write-Error $_
             Continue
         }
@@ -84,8 +83,7 @@ function Get-CIEdge {
                 }
 
             }
-        }
-        catch [exception] {
+        } catch [exception] {
             throw $_
         }
 

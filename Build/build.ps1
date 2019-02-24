@@ -23,8 +23,7 @@ Write-Output "`nPowerShell Version Information:"
 $PSVersionTable
 
 # Load dependencies
-if ($PSBoundParameters.Keys -contains 'ResolveDependency')
-{
+if ($PSBoundParameters.Keys -contains 'ResolveDependency') {
     # Bootstrap environment
     Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
 
@@ -52,9 +51,7 @@ if ($PSBoundParameters.Keys -contains 'ResolveDependency')
 
     # Remove ResolveDependency PSBoundParameter ready for passthru to PSake
     $PSBoundParameters.Remove('ResolveDependency')
-}
-else
-{
+} else {
     Write-Host "Skipping dependency check...`n" -ForegroundColor 'Yellow'
 }
 
@@ -62,8 +59,6 @@ else
 Set-BuildEnvironment -Force
 
 # Import module
-# TODO: add AzDO error reporting with:
-#   Write-Host “##vso[task.logissue type=error;] PowerShell Error Test”
 Import-Module -Name $env:BHPSModuleManifest -ErrorAction 'Stop' -Force
 
 # Execute PSake tasts

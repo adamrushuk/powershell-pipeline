@@ -55,21 +55,18 @@ function Get-CIEdgeView {
                 # Find Edge
                 try {
                     Search-Cloud -QueryType EdgeGateway -Name $EdgeName | Get-CIView
-                }
-                catch [exception] {
+                } catch [exception] {
                     Write-Error "An error occurred searching for Edge Gateway named $EdgeName."
                 }
 
             } # End foreach
 
-        }
-        else {
+        } else {
 
             # Return all vShield Edges
             try {
                 Search-Cloud -QueryType EdgeGateway | Get-CIView
-            }
-            catch [exception] {
+            } catch [exception] {
                 Write-Error "An error occurred searching for all Edge Gateways."
             }
 

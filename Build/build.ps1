@@ -1,32 +1,70 @@
-param ($Task = 'Default')
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [System.String[]]
+    $TaskList = 'Default',
 
-$global:VerbosePreference = "SilentlyContinue"
+    [Parameter()]
+    [System.Collections.Hashtable]
+    $Parameters,
 
-# Grab nuget bits, install modules, set build variables, start build.
-Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
+    [Parameter()]
+    [System.Collections.Hashtable]
+    $Properties,
 
-# Install modules if required
-$ModNames = @('Psake', 'PSDeploy', 'BuildHelpers', 'PSScriptAnalyzer', 'VMware.VimAutomation.Cloud')
-foreach ($ModName in $ModNames) {
-    if (-not (Get-Module -Name $ModName -ListAvailable)) {
-        Write-Verbose "$ModName module not installed. Installing from PSGallery..."
-        Install-Module -Name $ModName -Force -AllowClobber -Scope 'CurrentUser' > $null
+    [Parameter()]
+    [Switch]
+    $ResolveDependency
+)
+
+Write-Output "`nSTARTED TASKS: $($TaskList -join ',')`n"
+
+Write-Output "`nPowerShell Version Information:"
+$PSVersionTable
+
+# Load dependencies
+if ($PSBoundParameters.Keys -contains 'ResolveDependency') {
+    # Bootstrap environment
+    Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Out-Null
+
+    # Install PSDepend module if it is not already installed
+    if (-not (Get-Module -Name 'PSDepend' -ListAvailable)) {
+        Write-Output "`nPSDepend is not yet installed...installing PSDepend now..."
+        Install-Module -Name 'PSDepend' -Scope 'CurrentUser' -Force
+    } else {
+        Write-Output "`nPSDepend already installed...skipping."
     }
 
-    if (-not (Get-Module -Name $ModName)) {
-        Import-Module -Name $ModName -Force
+    # Install build dependencies
+    $psdependencyConfigPath = Join-Path -Path $PSScriptRoot -ChildPath 'psvcloud.depend.psd1'
+    Write-Output "Checking / resolving module dependencies from [$psdependencyConfigPath]..."
+    Import-Module -Name 'PSDepend'
+    $invokePSDependParams = @{
+        Path    = $psdependencyConfigPath
+        # Tags = 'Bootstrap'
+        Import  = $true
+        Confirm = $false
+        Install = $true
+        # Verbose = $true
     }
+    Invoke-PSDepend @invokePSDependParams
+
+    # Remove ResolveDependency PSBoundParameter ready for passthru to PSake
+    $PSBoundParameters.Remove('ResolveDependency')
+} else {
+    Write-Host "Skipping dependency check...`n" -ForegroundColor 'Yellow'
 }
 
-# Target latest version of Pester as older versions are bundled with OS
-if (-not (Get-Module -Name 'Pester' -ListAvailable | Where-Object {$_.Version -match '^4.'})) {
-    Install-Module 'Pester' -MinimumVersion '4.4.2' -Force -AllowClobber -Scope 'CurrentUser' -SkipPublisherCheck -ErrorAction 'Stop'
-}
-if (-not (Get-Module -Name 'Pester')) {
-    Import-Module -Name 'Pester' -Force
-}
+# Init BuildHelpers
+Set-BuildEnvironment -Force
 
-Set-BuildEnvironment
 
-Invoke-psake -buildFile $ENV:BHProjectPath\Build\build.psake.ps1 -taskList $Task -nologo
-exit ( [int]( -not $psake.build_success ) )
+# Execute PSake tasts
+$invokePsakeParams = @{
+    buildFile = (Join-Path -Path $env:BHProjectPath -ChildPath 'Build\build.psake.ps1')
+    nologo    = $true
+}
+Invoke-Psake @invokePsakeParams @PSBoundParameters
+
+Write-Output "`nFINISHED TASKS: $($TaskList -join ',')"
+exit ( [int](-not $psake.build_success) )

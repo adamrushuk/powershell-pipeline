@@ -121,12 +121,8 @@ function Get-CIVMPrice {
                 }
 
             }
-
-        }
-        catch [exception] {
-
+        } catch [exception] {
             throw $_
-
         }
 
     } # End process

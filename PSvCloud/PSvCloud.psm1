@@ -1,18 +1,13 @@
 # Get public and private function files
-$Public = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -Recurse -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -Recurse -ErrorAction SilentlyContinue )
+$Public = @( Get-ChildItem -Path "$PSScriptRoot\Public\*.ps1" -Recurse -ErrorAction 'SilentlyContinue' )
+$Private = @( Get-ChildItem -Path "$PSScriptRoot\Private\*.ps1" -Recurse -ErrorAction 'SilentlyContinue' )
 
 # Dot source the files
-foreach ($FunctionFile in @($Public + $Private)) {
-
+foreach ($functionFile in @($Public + $Private)) {
     try {
-
-        . $FunctionFile.fullname
-
-    }
-    catch {
-
-        Write-Error -Message "Failed to import function $($FunctionFile.fullname): $_"
+        . $functionFile.fullname
+    } catch {
+        Write-Error -Message "Failed to import function $($functionFile.fullname): $_"
     }
 }
 

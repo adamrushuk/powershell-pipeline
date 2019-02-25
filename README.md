@@ -1,10 +1,13 @@
 # PowerShell Pipeline Example
 
+[![Build Status](https://adamrushuk.visualstudio.com/PoC/_apis/build/status/PowerShellPipeline?branchName=master)](https://adamrushuk.visualstudio.com/PoC/_build/latest?definitionId=22&branchName=master)
+[![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
+[![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
+[![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
+
 This is a Proof of Concept repo to show how you can build CI/CD pipeline for a PowerShell module.
 
 The example is an old PowerShell module I started for VMware vCloud Director.
-
-[![Build Status](https://adamrushuk.visualstudio.com/PoC/_apis/build/status/PowerShellPipeline?branchName=master)](https://adamrushuk.visualstudio.com/PoC/_build/latest?definitionId=22&branchName=master)
 
 ## Goals
 

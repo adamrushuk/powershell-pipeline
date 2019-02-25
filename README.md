@@ -4,6 +4,7 @@
 [![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
 [![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
 [![Dev Deployment Status](https://adamrushuk.vsrm.visualstudio.com/_apis/public/Release/badge/4ce5af3d-5ed8-4548-8eda-4237b4c67331/1/1)]
+[![PSvCloud package in dev feed in Azure Artifacts](https://adamrushuk.feeds.visualstudio.com/_apis/public/Packaging/Feeds/d3fe8e81-a639-44de-b162-3f0fd5ccd879/Packages/7218d060-f41d-43ab-a705-b7777f6c846d/Badge)](https://adamrushuk.visualstudio.com/PoC/_packaging?_a=package&feed=d3fe8e81-a639-44de-b162-3f0fd5ccd879&package=7218d060-f41d-43ab-a705-b7777f6c846d&preferRelease=true)
 
 This is a Proof of Concept repo to show how you can build CI/CD pipeline for a PowerShell module.
 

@@ -10,8 +10,6 @@ param (
 $moduleFolderPath = Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "PowerShellPipeline\PSModule\PSvCloud"
 $repositoryName = 'psmodules'
 $feedUsername = 'NotChecked'
-# $PAT = $env:ArtifactFeedPat
-# $PAT = $(ArtifactFeedPat)
 $packageSourceUrl = "https://adamrushuk.pkgs.visualstudio.com/_packaging/$repositoryName/nuget/v2" # Enter your VSTS AccountName (note: v2 Feed)
 
 # Testing
@@ -19,13 +17,13 @@ Write-Host "ARTestVar env var: [$env:ARTestVar]"
 Write-Host "ArtifactFeedPat env var: [$env:ArtifactFeedPat]"
 Write-Host "PAT param passed in: [$PAT]"
 Write-Host "SecretVar param passed in: [$SecretVar]"
-
+<#
 Write-Host "NuGet binary info:"
 Get-Command NuGet.exe | Format-List *
 
 Get-ChildItem $moduleFolderPath
 Test-ModuleManifest -Path "$moduleFolderPath\PSvCloud.psd1"
-
+#>
 
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.

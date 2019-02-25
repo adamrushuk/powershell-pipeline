@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
-   $PAT,
-   $SecretVar
+    [string]$PAT,
+    [string]$SecretVar
 )
 
 # Variables
@@ -30,7 +30,7 @@ Test-ModuleManifest -Path "$moduleFolderPath\PSvCloud.psd1"
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.
 $nugetPath = 'C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
-if (-not (Test-Path -Path $nugetPath)){
+if (-not (Test-Path -Path $nugetPath)) {
     $nugetPath = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
 }
 

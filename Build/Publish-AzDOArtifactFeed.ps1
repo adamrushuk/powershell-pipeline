@@ -1,5 +1,6 @@
-Param(
-   [string]$PAT
+[CmdletBinding()]
+param (
+   $PAT
 )
 
 # Variables
@@ -14,7 +15,8 @@ $packageSourceUrl = "https://adamrushuk.pkgs.visualstudio.com/_packaging/$reposi
 
 # Testing
 Write-Host "ARTestVar env var: [$env:ARTestVar]"
-Write-Host "ArtifactFeedPat 'secret' env var: [$(secret.ArtifactFeedPat)]"
+Write-Host "ArtifactFeedPat env var: [$env:ArtifactFeedPat]"
+Write-Host "ArtifactFeedPat direct var: [$(ArtifactFeedPat)]"
 Write-Host "PAT param passed in: [$PAT]"
 
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"

@@ -7,7 +7,7 @@ param (
 # Variables
 # $powershellGetVersion = '1.5.0.0' # DO NOT use the latest 1.6.0 version as there is issues with this process
 # $moduleFolderPath = 'C:\Users\adamr\code\PowerShellPipeline\Staging\PSvCloud' # only target folder, NOT the .psm1 or .psd1
-$moduleFolderPath = Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "PowerShellPipeline\PSModule"
+$moduleFolderPath = Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "PowerShellPipeline\PSModule\PSvCloud"
 $repositoryName = 'psmodules'
 $feedUsername = 'NotChecked'
 # $PAT = $env:ArtifactFeedPat

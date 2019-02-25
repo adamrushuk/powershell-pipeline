@@ -63,6 +63,6 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: "Publish Artifact: PowerShell Module"
     inputs:
-      PathtoPublish: Staging\PSvCloud
+      PathtoPublish: Staging
       ArtifactName: PSModule
     condition: always()

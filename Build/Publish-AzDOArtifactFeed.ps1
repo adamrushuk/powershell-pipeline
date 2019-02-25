@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
     [string]$AzDOAccountName = 'adamrushuk',
-    [string]$AzDOArtifactFeedName = 'psmodules',
+    [string]$AzDOArtifactFeedName = 'dev',
     [string]$AzDOPat,
     [string]$ModuleFolderPath = (Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "PowerShellPipeline\PSModule\PSvCloud")
 )

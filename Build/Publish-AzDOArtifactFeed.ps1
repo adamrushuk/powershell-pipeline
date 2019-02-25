@@ -1,27 +1,22 @@
 [CmdletBinding()]
 param (
-    [string]$PAT
+    [string]$AzDOAccountName = 'adamrushuk',
+    [string]$AzDOArtifactsFeedName = 'psmodules',
+    [string]$AzDOPat
 )
 
 # Variables
 $moduleFolderPath = Join-Path -Path $env:SYSTEM_ARTIFACTSDIRECTORY -ChildPath "PowerShellPipeline\PSModule\PSvCloud"
-$repositoryName = 'psmodules'
+
 $feedUsername = 'NotChecked'
-$packageSourceUrl = "https://adamrushuk.pkgs.visualstudio.com/_packaging/$repositoryName/nuget/v2" # Enter your VSTS AccountName (note: v2 Feed)
+$packageSourceUrl = "https://$($AzDOAccountName).pkgs.visualstudio.com/_packaging/$AzDOArtifactsFeedName/nuget/v2" # Enter your VSTS AccountName (note: v2 Feed)
 
 # Testing
 Write-Host "artifact_feed_pat env var: [$env:artifact_feed_pat]"
-Write-Host "PAT param passed in: [$PAT]"
+Write-Host "PAT param passed in: [$AzDOPat]"
 
 ls env: | ft -AutoSize
 
-<#
-Write-Host "NuGet binary info:"
-Get-Command NuGet.exe | Format-List *
-
-Get-ChildItem $moduleFolderPath
-Test-ModuleManifest -Path "$moduleFolderPath\PSvCloud.psd1"
-#>
 
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.
@@ -32,7 +27,7 @@ if (-not (Test-Path -Path $nugetPath)) {
 }
 
 # Create credential
-$password = ConvertTo-SecureString -String $PAT -AsPlainText -Force
+$password = ConvertTo-SecureString -String $AzDOPat -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential ($feedUsername, $password)
 
 
@@ -53,7 +48,7 @@ Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
 # Try to Publish a PowerShell module - this will prompt and download NuGet.exe, and fail publishing the module (we publish at the end)
 $publishParams = @{
     Path        = $moduleFolderPath
-    Repository  = $repositoryName
+    Repository  = $AzDOArtifactsFeedName
     NugetApiKey = 'VSTS'
     Force       = $true
     Verbose     = $true
@@ -64,7 +59,7 @@ Publish-Module @publishParams
 
 # Step 4
 # Register NuGet Package Source
-& $nugetPath Sources Add -Name $repositoryName -Source $packageSourceUrl -Username $feedUsername -Password $PAT
+& $nugetPath Sources Add -Name $AzDOArtifactsFeedName -Source $packageSourceUrl -Username $feedUsername -Password $AzDOPat
 
 # Check new NuGet Source is registered
 & $nugetPath Sources List
@@ -73,7 +68,7 @@ Publish-Module @publishParams
 # Step 5
 # Register feed
 $registerParams = @{
-    Name                      = $repositoryName
+    Name                      = $AzDOArtifactsFeedName
     SourceLocation            = $packageSourceUrl
     PublishLocation           = $packageSourceUrl
     InstallationPolicy        = 'Trusted'
@@ -84,7 +79,7 @@ $registerParams = @{
 Register-PSRepository @registerParams
 
 # Check new PowerShell Repository is registered
-Get-PSRepository -Name $repositoryName
+Get-PSRepository -Name $AzDOArtifactsFeedName
 
 
 # Step 6

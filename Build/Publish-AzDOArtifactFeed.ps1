@@ -21,17 +21,16 @@ Write-Host "PAT param passed in: [$PAT]"
 Write-Host "SecretVar param passed in: [$SecretVar]"
 
 Write-Host "NuGet binary info:"
-gcm NuGet.exe | fl *
+Get-Command NuGet.exe | Format-List *
 
-ls $moduleFolderPath
+Get-ChildItem $moduleFolderPath
 Test-ModuleManifest -Path "$moduleFolderPath\PSvCloud.psd1"
-Test-ModuleManifest -Path "C:\Users\adamr\code\PowerShellPipeline\PSvCloud\PSvCloud.psd1"
 
 
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.
 $nugetPath = 'C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
-if (-not Test-Path -Path $nugetPath){
+if (-not (Test-Path -Path $nugetPath)){
     $nugetPath = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
 }
 
@@ -49,7 +48,7 @@ $credential = New-Object System.Management.Automation.PSCredential ($feedUsernam
 
 # Step 2
 # Check NuGet is listed
-Get-PackageProvider -Name 'NuGet' -ForceBootstrap | fl *
+Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
 
 
 # Step 3

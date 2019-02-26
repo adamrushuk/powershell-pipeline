@@ -21,7 +21,7 @@ steps:
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'CombineFunctionsAndStage'
-    displayName: "CombineFunctions"
+    displayName: "Combine PowerShell functions into single module file"
 
   - powershell: |
       .\Build\build.ps1 -TaskList 'Analyze'

@@ -12,8 +12,9 @@ function Set-Media {
         .PARAMETER CIVMName
         Specifies the vCloud VM name.
 
-        .PARAMETER NoMedia
-        Indicates that you want to detach the connected media - ISO from datastore or host device.
+        # ! Commented out parameter help
+        # .PARAMETER NoMedia
+        # Indicates that you want to detach the connected media - ISO from datastore or host device.
 
         .INPUTS
         System.String
@@ -21,15 +22,11 @@ function Set-Media {
         .OUTPUTS
         PSCustomObject
 
-        .EXAMPLE
-        Set-Media -Name 'Media01' -CIVMName 'VM01'
+        # ! Commented out example code, and example description
+        # .EXAMPLE
+        # Set-Media -Name 'Media01' -CIVMName 'VM01'
 
-        Inserts media named 'Media01' into the vCloud VM named 'VM01'.
-
-        .EXAMPLE
-        Set-Media -Name 'Media01' -CIVMName 'VM01' -NoMedia
-
-        Ejects media named 'Media01' from the vCloud VM named 'VM01'.
+        # Inserts media named 'Media01' into the vCloud VM named 'VM01'.
 
         .NOTES
         Author: Adam Rush

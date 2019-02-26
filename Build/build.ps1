@@ -55,6 +55,7 @@ if ($PSBoundParameters.Keys -contains 'ResolveDependency') {
     Write-Host "Skipping dependency check...`n" -ForegroundColor 'Yellow'
 }
 
+
 # Init BuildHelpers
 Set-BuildEnvironment -Force
 

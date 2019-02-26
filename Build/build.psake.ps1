@@ -15,7 +15,7 @@ Properties {
 
     # Script Analyzer
     [ValidateSet('Error', 'Warning', 'Any', 'None')]
-    $ScriptAnalysisFailBuildOnSeverityLevel = 'Error'
+    $ScriptAnalysisFailBuildOnSeverityLevel = 'Warning'
     $ScriptAnalyzerSettingsPath = "$ProjectRoot\PSScriptAnalyzerSettings.psd1"
 
     # Build

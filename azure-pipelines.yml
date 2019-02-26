@@ -11,6 +11,7 @@ trigger:
     include:
       # Any Pull Request merging into the master branch
       - master
+      - develop
 
 steps:
   # Build Tasks

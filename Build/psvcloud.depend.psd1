@@ -3,22 +3,22 @@
     PSDependOptions  = @{
         Target     = 'CurrentUser'
         Parameters = @{
-            # Use a local repository for offline support
+            # Can use a local repository for offline support
             Repository         = 'PSGallery'
-            SkipPublisherCheck = $true
+            # SkipPublisherCheck = $true
         }
     }
 
     # Dependency Management modules
-    # PackageManagement = '1.2.2'
-    # PowerShellGet     = '2.0.1'
+    # PackageManagement = '1.4.6'
+    # PowerShellGet     = '2.2.3'
 
     # Common modules
-    BuildHelpers     = '2.0.1'
-    Pester           = '4.6.0'
-    PlatyPS          = '0.12.0'
-    psake            = '4.7.4'
-    PSDeploy         = '1.0.1'
-    PSScriptAnalyzer = '1.17.1'
+    BuildHelpers     = '2.0.11'
+    Pester           = '4.10.1'
+    PlatyPS          = '0.14.0'
+    psake            = '4.9.0'
+    PSDeploy         = '1.0.3'
+    PSScriptAnalyzer = '1.18.3'
     # 'VMware.VimAutomation.Cloud' = '11.0.0.10379994'
 }

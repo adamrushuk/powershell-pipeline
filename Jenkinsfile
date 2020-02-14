@@ -5,17 +5,23 @@ pipeline {
     kubernetes {
       containerTemplate {
         name 'psjenkinsagent'
-        image 'adamrushuk/psjenkinsagent:2020-01-25'
+        image 'adamrushuk/psjenkinsagent:2020-02-14'
         ttyEnabled true
         command 'cat'
+        // Set to 'true' if using 'latest' for your container image
         alwaysPullImage true
       }
     }
   }
 
-  // parameters {}
+  parameters {
+    string name: 'REPO_API_KEY', defaultValue: '', description: 'Enter your API key', trim: true
+    string name: 'REPO_URL', defaultValue: '', description: 'Enter your repository URL (NuGet Feed)', trim: true
+  }
 
-  // environment {}
+  environment {
+    REPO_NAME = "nexus"
+  }
 
   options {
     ansiColor('xterm')
@@ -28,12 +34,10 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
       }
       steps {
-        pwsh(script: './Build/build.ps1 -ResolveDependency -TaskList Init')
-        pwsh(script: './Build/build.ps1 -TaskList CombineFunctionsAndStage')
-        pwsh(script: './Build/build.ps1 -TaskList Analyze')
-        pwsh(script: './Build/build.ps1 -TaskList Test')
-        pwsh(script: './Build/build.ps1 -TaskList UpdateDocumentation')
-        pwsh(script: './Build/build.ps1 -TaskList CreateBuildArtifact')
+        sh """
+          env | sort
+          pwsh -NoProfile -NoLogo -NonInteractive -File ./Build/build.ps1 -ResolveDependency -TaskList Publish
+        """
       }
     }
 
@@ -41,6 +45,7 @@ pipeline {
 
   post {
     always {
+      archiveArtifacts allowEmptyArchive: true, artifacts: '**/*PSvCloud*.zip'
       archiveArtifacts allowEmptyArchive: true, artifacts: '**/*_pester-test-results.xml'
       junit allowEmptyResults: true, testResults: '**/*_pester-test-results.xml'
     }

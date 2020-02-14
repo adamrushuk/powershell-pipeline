@@ -34,6 +34,7 @@ Properties {
 
 # Define top-level tasks
 Task 'Default' -Depends 'Test'
+Task 'Publish' -Depends 'Init', 'Clean','CombineFunctionsAndStage', 'ImportStagingModule', 'Analyze', 'Test', 'UpdateDocumentation', 'CreateBuildArtifact', 'RegisterRepo', 'Deploy'
 
 
 # Show build variables
@@ -42,13 +43,13 @@ Task 'Init' {
 
     Set-Location $ProjectRoot
     "Build System Details:"
-    Get-Item ENV:BH*
+    Get-ChildItem ENV:BH* | Format-Table -Wrap
     "`n"
 }
 
 
 # Clean the Artifact and Staging folders
-Task 'Clean' -Depends 'Init' {
+Task 'Clean' {
     $lines
 
     $foldersToClean = @(
@@ -66,7 +67,7 @@ Task 'Clean' -Depends 'Init' {
 
 # Create a single .psm1 module file containing all functions
 # Copy new module and other supporting files (Documentation / Examples) to Staging folder
-Task 'CombineFunctionsAndStage' -Depends 'Clean' {
+Task 'CombineFunctionsAndStage' {
     $lines
 
     # Create folders
@@ -96,7 +97,7 @@ Task 'CombineFunctionsAndStage' -Depends 'Clean' {
 
 
 # Import new module
-Task 'ImportStagingModule' -Depends 'Init' {
+Task 'ImportStagingModule' {
     $lines
     Write-Output "Reloading staged module from path: [$StagingModulePath]`n"
 
@@ -110,7 +111,7 @@ Task 'ImportStagingModule' -Depends 'Init' {
 
 
 # Run PSScriptAnalyzer against code to ensure quality and best practices are used
-Task 'Analyze' -Depends 'ImportStagingModule' {
+Task 'Analyze' {
     $lines
     Write-Output "Running PSScriptAnalyzer on path: [$StagingModulePath]`n"
 
@@ -142,12 +143,12 @@ Task 'Analyze' -Depends 'ImportStagingModule' {
 # Run Pester tests
 # Unit tests: verify inputs / outputs / expected execution path
 # Misc tests: verify manifest data, check comment-based help exists
-Task 'Test' -Depends 'ImportStagingModule' {
+Task 'Test' {
     $lines
 
     # Gather test results. Store them in a variable and file
     $TestFilePath = Join-Path -Path $ArtifactFolder -ChildPath $TestFile
-    $TestResults = Invoke-Pester -Script $TestScripts -PassThru -OutputFormat $TestOutputFormat -OutputFile $TestFilePath -PesterOption @{IncludeVSCodeMarker = $true}
+    $TestResults = Invoke-Pester -Script $TestScripts -PassThru -OutputFormat $TestOutputFormat -OutputFile $TestFilePath -PesterOption @{ IncludeVSCodeMarker = $true }
 
     # Fail build if any tests fail
     if ($TestResults.FailedCount -gt 0) {
@@ -157,7 +158,7 @@ Task 'Test' -Depends 'ImportStagingModule' {
 
 
 # Create new Documentation markdown files from comment-based help
-Task 'UpdateDocumentation' -Depends 'ImportStagingModule' {
+Task 'UpdateDocumentation' {
     $lines
     Write-Output "Updating Markdown help in Staging folder: [$DocumentationPath]`n"
 
@@ -184,7 +185,7 @@ Task 'UpdateDocumentation' -Depends 'ImportStagingModule' {
 
 # Create a versioned zip file of all staged files
 # NOTE: Admin Rights are needed if you run this locally
-Task 'CreateBuildArtifact' -Depends 'Init' {
+Task 'CreateBuildArtifact' {
     $lines
 
     # Create /Release folder
@@ -215,6 +216,8 @@ Task 'CreateBuildArtifact' -Depends 'Init' {
 
 #region NOT USED FOR THIS DEMO
 # Task 'Release' -Depends 'Clean', 'Test', 'UpdateDocumentation', 'CombineFunctionsAndStage', 'CreateBuildArtifact' #'UpdateManifest', 'UpdateTag'
+# TODO: Dynamically set module version: Get-NextNugetPackageVersion.ps1
+# TODO: https://github.com/RamblingCookieMonster/BuildHelpers/blob/master/BuildHelpers/Public/Get-NextNugetPackageVersion.ps1
 Task 'Build' -Depends 'Init' {
     $lines
 
@@ -230,15 +233,29 @@ Task 'Build' -Depends 'Init' {
     }
 }
 
+Task 'RegisterRepo' {
+    $lines
 
-Task 'Deploy' -Depends 'Init' {
+    $registerRepoParams = @{
+        Name                      = $env:REPO_NAME
+        SourceLocation            = $env:REPO_URL
+        PublishLocation           = $env:REPO_URL
+        PackageManagementProvider = "nuget"
+        InstallationPolicy        = "Trusted"
+        Verbose                   = $true
+    }
+    Register-PSRepository @registerRepoParams
+}
+
+Task 'Deploy' {
     $lines
 
     $Params = @{
-        Path    = "$ProjectRoot"
+        Path    = "./Build/"
         Force   = $true
         Recurse = $false
+        Verbose = $true
     }
-    Invoke-PSDeploy @Verbose @Params
+    Invoke-PSDeploy @Params
 }
 #endregion NOT USED FOR THIS DEMO

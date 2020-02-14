@@ -11,7 +11,8 @@ Properties {
 
     # Pester
     $TestScripts = Get-ChildItem "$ProjectRoot\Tests\*\*Tests.ps1"
-    $TestFile = "Test-Unit_$($TimeStamp).xml"
+    $TestFile = "$($TimeStamp)_pester-test-results.xml"
+    $TestOutputFormat = "JUnitXml"
 
     # Script Analyzer
     [ValidateSet('Error', 'Warning', 'Any', 'None')]
@@ -146,7 +147,7 @@ Task 'Test' -Depends 'ImportStagingModule' {
 
     # Gather test results. Store them in a variable and file
     $TestFilePath = Join-Path -Path $ArtifactFolder -ChildPath $TestFile
-    $TestResults = Invoke-Pester -Script $TestScripts -PassThru -OutputFormat 'NUnitXml' -OutputFile $TestFilePath -PesterOption @{IncludeVSCodeMarker = $true}
+    $TestResults = Invoke-Pester -Script $TestScripts -PassThru -OutputFormat $TestOutputFormat -OutputFile $TestFilePath -PesterOption @{IncludeVSCodeMarker = $true}
 
     # Fail build if any tests fail
     if ($TestResults.FailedCount -gt 0) {
